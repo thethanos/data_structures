@@ -1,20 +1,14 @@
 #include "tree.h"
 
-int main(int argc, char** argv)
+int main() 
 {
-	Node* pTree = nullptr;
+    Tree<int> tree(10);
+    tree.Insert(9);
+    tree.Insert(3);
+    tree.Insert(55);
+    tree.Insert(12);
+    tree.Insert(11);
+    tree.Print();
 
-	add_node(10, pTree);
-	add_node(11, pTree);
-	add_node(8, pTree);
-	add_node(2, pTree);
-	add_node(1, pTree);
-	add_node(12, pTree);
-
-
-	print_tree(pTree);
-
-
-	return 0;
+    return 0;
 }
-
