@@ -35,7 +35,7 @@ class Tree
 {
 public:
 	Tree(T value);
-	~Tree() {}
+	~Tree() { ClearNode(m_pRoot); }
 
 public:
 	void Insert(T value) { AddNode(value, m_pRoot); }
@@ -47,6 +47,7 @@ private:
 private:
 	void AddNode(T value, Node<T>* &pParent = nullptr);
 	void PrintNode(Node<T>* current_node);
+	void ClearNode(Node<T>* &current_node);
 };
 
 template <typename T>
@@ -87,4 +88,17 @@ void Tree<T>::PrintNode(Node<T>* current_node)
 		std::cout << current_node->m_Data << std::endl;
 		PrintNode(current_node->m_pRight);
 	}
+}
+
+template <typename T>
+void Tree<T>::ClearNode(Node<T>* &current_node)
+{
+	if (current_node == nullptr)
+		return;
+
+	ClearNode(current_node->m_pLeft);
+	ClearNode(current_node->m_pRight);
+	
+	delete current_node;
+	current_node = nullptr;
 }
