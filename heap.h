@@ -7,8 +7,7 @@ template <typename T>
 class Heap
 {
 	public:
-		void Insert(T value);
-		void Print();	
+		void Insert(T value);	
 		T    ExtractMax();	
 
 	private:
@@ -37,13 +36,6 @@ void Heap<T>::Insert(T value)
 }
 
 template <typename T>
-void Heap<T>::Print()
-{
-	for(auto item : m_Data)
-	       std::cout << item << std::endl;	
-}
-
-template <typename T>
 T Heap<T>::ExtractMax()
 {
 	T res = m_Data.front();
@@ -57,6 +49,9 @@ T Heap<T>::ExtractMax()
 template <typename T>
 void Heap<T>::Heapify(int cur_item)
 {
+	if (m_Data.empty())
+		return;
+
 	int leftChild(0), rightChild(0), largestChild(0);
 
 	while(true)
@@ -65,19 +60,27 @@ void Heap<T>::Heapify(int cur_item)
 		rightChild   = 2 * cur_item + 2;
 		largestChild = cur_item;
 
-		if(leftChild < m_Data.size() && m_Data.at(leftChild) > m_Data.at(rightChild))
-			largestChild = leftChild;
-
-		if(rightChild < m_Data.size() && m_Data.at(rightChild) > m_Data.at(leftChild))
-			largestChild = rightChild;
-
-		if(largestChild == cur_item)
+		if (leftChild >= m_Data.size())
 			return;
 
-		T temp 		     = m_Data[cur_item];
+		if (rightChild >= m_Data.size())
+			largestChild = leftChild;
+		else
+		{
+			if (leftChild < m_Data.size() && m_Data.at(leftChild) > m_Data.at(rightChild))
+				largestChild = leftChild;
+
+			if (rightChild < m_Data.size() && m_Data.at(rightChild) > m_Data.at(leftChild))
+				largestChild = rightChild;
+		}
+
+		if(largestChild == cur_item || m_Data.at(largestChild) < m_Data.at(cur_item))
+			return;
+
+		T temp 				 = m_Data[cur_item];
 		m_Data[cur_item]     = m_Data[largestChild];
 		m_Data[largestChild] = temp;
-		cur_item 	     = largestChild;
+		cur_item 			 = largestChild;
 	}
 }
 
