@@ -6,16 +6,27 @@
 template <typename T>
 class Heap
 {
-	public:
-		void Insert(T value);	
-		T    ExtractMax();	
+public:
+	Heap() {}
+	Heap(std::initializer_list<T> lst);
 
-	private:
-		void Heapify(int cur_item);	
+public:
+	void Insert(T value);	
+	T    ExtractMax();	
 
-	private:	
-		std::deque<T> m_Data;
+private:
+	void Heapify(int cur_item);	
+
+private:	
+	std::deque<T> m_Data;
 };
+
+template <typename T>
+Heap<T>::Heap(std::initializer_list<T> lst)
+{
+	for (auto item : lst)
+		Insert(item);
+}
 
 template <typename T>
 void Heap<T>::Insert(T value)

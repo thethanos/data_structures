@@ -2,7 +2,7 @@
 
 int main() 
 {
-    Heap<int> heap;
+    Heap<int> heap{ 1,5,2,7,8 };
     heap.Insert(555);
     heap.Insert(9);
     heap.Insert(3);
@@ -12,7 +12,7 @@ int main()
     heap.Insert(0);
     heap.Insert(11);
     
-    for (int i(0); i < 8; ++i)
+    for (int i(0); i < 13; ++i)
         std::cout << heap.ExtractMax() << std::endl; 
 
 
