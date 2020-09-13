@@ -18,7 +18,7 @@ private:
 	Node<T>* m_pLeft;
 	Node<T>* m_pRight;
 
-	friend Tree;
+	friend Tree<T>;
 };
 
 template <typename T>
