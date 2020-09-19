@@ -78,14 +78,14 @@ void Heap<T>::Heapify(int cur_item)
 			largestChild = leftChild;
 		else
 		{
-			if (leftChild < m_Data.size() && m_Data.at(leftChild) > m_Data.at(rightChild))
+			if (m_Data.at(leftChild) > m_Data.at(rightChild))
 				largestChild = leftChild;
 
-			if (rightChild < m_Data.size() && m_Data.at(rightChild) > m_Data.at(leftChild))
+			if (m_Data.at(rightChild) > m_Data.at(leftChild))
 				largestChild = rightChild;
 		}
 
-		if(largestChild == cur_item || m_Data.at(largestChild) < m_Data.at(cur_item))
+		if(largestChild == cur_item || m_Data.at(largestChild) <=  m_Data.at(cur_item))
 			return;
 
 		T temp 				 = m_Data[cur_item];
