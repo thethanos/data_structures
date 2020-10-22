@@ -25,21 +25,22 @@ template <typename T>
 class AVLTree
 {
 public:
-	AVLTree() {}
+	AVLTree()  {}
 	~AVLTree() { delete_node(m_pRoot); }
 
 public:
 	void insert(T value) { insert_node(value, m_pRoot); }
-	void print() { print_node(m_pRoot); }
+	void print()		 { print_node(m_pRoot); }
 
 private:
 	void insert_node(T value, Node<T>*& node);
 	void print_node(Node<T>* node);
 
-	char get_height(Node<T>* node){ return node ? node->m_Height : 0; }
+	char get_height(Node<T>* node) { return node ? node->m_Height : 0; }
 	char get_bfactor(Node<T>* node){ return get_height(node->m_pLeft) - get_height(node->m_pRight); }
 
 	void fix_height(Node<T>*& node);
+
 	Node<T>* rotate_right(Node<T>*& node);
 	Node<T>* rotate_left(Node<T>*& node);
 	Node<T>* balance_subtree(Node<T>*& node);
