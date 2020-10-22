@@ -15,9 +15,8 @@ private:
 	Node<T>* m_pLeft{nullptr};
 	Node<T>* m_pRight{ nullptr };
 
-	T m_Value;
-
-	int m_Height{ 1 };
+	T    m_Value;
+	char m_Height{ 1 };
 
 	friend AVLTree<T>;
 };
@@ -37,8 +36,8 @@ private:
 	void insert_node(T value, Node<T>*& node);
 	void print_node(Node<T>* node);
 
-	int get_height(Node<T>* node){ return node ? node->m_Height : 0; }
-	int get_bfactor(Node<T>* node){ return get_height(node->m_pLeft) - get_height(node->m_pRight); }
+	char get_height(Node<T>* node){ return node ? node->m_Height : 0; }
+	char get_bfactor(Node<T>* node){ return get_height(node->m_pLeft) - get_height(node->m_pRight); }
 
 	void fix_height(Node<T>*& node);
 	Node<T>* rotate_right(Node<T>*& node);
@@ -82,15 +81,15 @@ void AVLTree<T>::print_node(Node<T>* node)
 	if (!node) return;
 
 	print_node(node->m_pLeft);
-	std::cout << "Value: " << node->m_Value << " height: " << node->m_Height << std::endl;
+	std::cout << "Value: " << node->m_Value << " height: " << (int)node->m_Height << std::endl;
 	print_node(node->m_pRight);
 }
 
 template <typename T>
 void AVLTree<T>::fix_height(Node<T>*& node)
 {
-	int hleft  = get_height(node->m_pLeft);
-	int hright = get_height(node->m_pRight);
+	char hleft  = get_height(node->m_pLeft);
+	char hright = get_height(node->m_pRight);
 
 	node->m_Height = (hleft > hright?hleft:hright) + 1;
 }
