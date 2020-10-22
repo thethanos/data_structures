@@ -9,12 +9,11 @@ template <typename T>
 class Node
 {
 public:
-	Node(T value, Node<T>* parent = nullptr) :m_Value(value), m_pParent(parent){}
+	Node(T value) :m_Value(value){}
 
 private:
 	Node<T>* m_pLeft{nullptr};
 	Node<T>* m_pRight{ nullptr };
-	Node<T>* m_pParent{ nullptr };
 
 	T m_Value;
 
@@ -63,7 +62,7 @@ void AVLTree<T>::insert_node(T value, Node<T>*& node)
 		if (node->m_pLeft != nullptr)
 			insert_node(value, node->m_pLeft);
 		else
-			node->m_pLeft = new Node<T>(value, node);
+			node->m_pLeft = new Node<T>(value);
 	}
 
 	if (value > node->m_Value)
@@ -71,7 +70,7 @@ void AVLTree<T>::insert_node(T value, Node<T>*& node)
 		if (node->m_pRight != nullptr)
 			insert_node(value, node->m_pRight);
 		else
-			node->m_pRight = new Node<T>(value, node);
+			node->m_pRight = new Node<T>(value);
 	}
 
 	node = balance_subtree(node);
