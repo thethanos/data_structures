@@ -94,7 +94,9 @@ Node<T>* AVLTree<T>::remove_node(T value, Node<T>*& node)
 	{
 		Node<T>* left = node->m_pLeft;
 		Node<T>* right = node->m_pRight;
+
 		delete node;
+		node = nullptr;
 
 		if (right == nullptr) return left;
 
@@ -102,6 +104,9 @@ Node<T>* AVLTree<T>::remove_node(T value, Node<T>*& node)
 		min->m_pRight = remove_min(right);
 		min->m_pLeft = left;
 
+		if(m_pRoot == nullptr)
+			return m_pRoot = balance_subtree(min);
+		
 		return balance_subtree(min);
 	}
 
@@ -111,7 +116,7 @@ Node<T>* AVLTree<T>::remove_node(T value, Node<T>*& node)
 template <typename T>
 void AVLTree<T>::print_node(Node<T>* node)
 {
-	if (!node) return;
+	if (node == nullptr) return;
 
 	print_node(node->m_pLeft);
 	std::cout << "Value: " << node->m_Value << " height: " << (int)node->m_Height << std::endl;
