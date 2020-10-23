@@ -30,7 +30,9 @@ public:
 
 public:
 	void insert(T value) { insert_node(value, m_pRoot); }
-	void print()		 { print_node(m_pRoot); }
+	void remove(T value) { remove_node(value, m_pRoot); }
+ 	void print()		 { print_node(m_pRoot); }
+
 
 private:
 	void insert_node(T value, Node<T>*& node);
@@ -44,6 +46,9 @@ private:
 	Node<T>* rotate_right(Node<T>*& node);
 	Node<T>* rotate_left(Node<T>*& node);
 	Node<T>* balance_subtree(Node<T>*& node);
+	Node<T>* find_min(Node<T>* node) { return node->m_pLeft ? find_min(node->m_pLeft) : node; }
+	Node<T>* remove_min(Node<T>*& node);
+	Node<T>* remove_node(T value, Node<T>*& node);
 
 	void delete_node(Node<T>*& node);
 
@@ -74,6 +79,33 @@ void AVLTree<T>::insert_node(T value, Node<T>*& node)
 	}
 
 	node = balance_subtree(node);
+}
+
+template <typename T>
+Node<T>* AVLTree<T>::remove_node(T value, Node<T>*& node)
+{
+	if (node == nullptr) return 0;
+
+	if (value < node->m_Value)
+		node->m_pLeft = remove_node(value, node->m_pLeft);
+	else if (value > node->m_Value)
+		node->m_pRight = remove_node(value, node->m_pRight);
+	else
+	{
+		Node<T>* left = node->m_pLeft;
+		Node<T>* right = node->m_pRight;
+		delete node;
+
+		if (right == nullptr) return left;
+
+		Node<T>* min = find_min(right);
+		min->m_pRight = remove_min(right);
+		min->m_pLeft = left;
+
+		return balance_subtree(min);
+	}
+
+	return balance_subtree(node);
 }
 
 template <typename T>
@@ -143,6 +175,16 @@ Node<T>* AVLTree<T>::balance_subtree(Node<T>*& node)
 	}
 
 	return node;
+}
+
+template <typename T>
+Node<T>* AVLTree<T>::remove_min(Node<T>*& node)
+{
+	if (node->m_pLeft == nullptr)
+		return node->m_pRight;
+
+	node->m_pLeft = remove_min(node->m_pLeft);
+	return balance_subtree(node);
 }
 
 template <typename T>
