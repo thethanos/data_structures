@@ -88,9 +88,11 @@ Node<T>* AVLTree<T>::remove_node(T value, Node<T>*& node)
 
 	if (value < node->m_Value)
 		node->m_pLeft = remove_node(value, node->m_pLeft);
-	else if (value > node->m_Value)
+
+	if (value > node->m_Value)
 		node->m_pRight = remove_node(value, node->m_pRight);
-	else
+
+	if(value == node->m_Value)
 	{
 		Node<T>* left = node->m_pLeft;
 		Node<T>* right = node->m_pRight;
@@ -100,9 +102,9 @@ Node<T>* AVLTree<T>::remove_node(T value, Node<T>*& node)
 
 		if (right == nullptr) return left;
 
-		Node<T>* min = find_min(right);
+		Node<T>* min  = find_min(right);
 		min->m_pRight = remove_min(right);
-		min->m_pLeft = left;
+		min->m_pLeft  = left;
 
 		if(m_pRoot == nullptr)
 			return m_pRoot = balance_subtree(min);
