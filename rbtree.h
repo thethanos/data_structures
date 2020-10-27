@@ -30,13 +30,13 @@ private:
 };
 
 template <typename T>
-Node<T>::Node(T value, COLOR color, Node<T>* left, Node<T>* right, Node<T>* parent)
+Node<T>::Node(T value, COLOR color, Node<T>* parent, Node<T>* left, Node<T>* right)
 {
     m_Value   = value;
     m_Color   = color;
+    m_pParent = parent;
     m_pLeft   = left;
     m_pRight  = right;
-    m_pParent = parent;
 }
 
 template <typename T>
@@ -119,22 +119,22 @@ template <typename T>
 Node<T>* RBTree<T>::insert_node(T value, Node<T>*& node)
 {
     if (node == m_pNil)        
-        node = new Node<T>(value, RED, m_pNil, m_pNil);
+        node = new Node<T>(value, RED, m_pNil, m_pNil, m_pNil);
     
     if (value < node->m_Value)
     {
         if (node->m_pLeft == m_pNil)
-            node->m_pLeft = new Node<T>(value, RED, m_pNil, m_pNil, node);
+            return node->m_pLeft = new Node<T>(value, RED, node, m_pNil, m_pNil);
         else
-            insert_node(value, node->m_pLeft);
+            return insert_node(value, node->m_pLeft);
     }
 
-    if(value >= node->m_Value)
+    if(value > node->m_Value)
     {
         if (node->m_pRight == m_pNil)
-            node->m_pRight = new Node<T>(value, RED, m_pNil, m_pNil, node);
+            return node->m_pRight = new Node<T>(value, RED, node, m_pNil, m_pNil);
         else
-            insert_node(value, node->m_pRight);
+            return insert_node(value, node->m_pRight);
     }
 
     return node;
@@ -191,5 +191,5 @@ void RBTree<T>::insert(T value)
             }
         }
     }
-    m_pRoot->m_Color = BLACK;                                   // Set the color of the root to BLACK
+    m_pRoot->m_Color = BLACK;
 }
