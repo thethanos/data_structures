@@ -194,7 +194,6 @@ void RBTree<T>::insert(T value)
                 }
                 swap_colors(node);
                 rotate_left(node->get_grandparent());
-
             }
         }
     }
