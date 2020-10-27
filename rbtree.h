@@ -2,7 +2,7 @@
 
 #include <iostream>
 
-enum COLORS
+enum COLOR
 {
     RED = 0,
     BLACK
@@ -15,7 +15,7 @@ template <typename T>
 class Node
 {
 public:
-    Node(T value, bool color = RED, Node<T>* left = nullptr, Node<T>* right = nullptr, Node<T>* parent = nullptr);
+    Node(T value, COLOR color = RED, Node<T>* left = nullptr, Node<T>* right = nullptr, Node<T>* parent = nullptr);
 
 private:
     T m_Value;
@@ -24,13 +24,13 @@ private:
     Node<T>* m_pRight;
     Node<T>* m_pParent;
 
-    bool m_Color;
+    COLOR m_Color;
 
     friend RBTree<T>;
 };
 
 template <typename T>
-Node<T>::Node(T value, bool color, Node<T>* left, Node<T>* right, Node<T>* parent)
+Node<T>::Node(T value, COLOR color, Node<T>* left, Node<T>* right, Node<T>* parent)
 {
     m_Value   = value;
     m_Color   = color;
@@ -54,7 +54,7 @@ private:
     void rotate_right(Node<T>* x);
     void print_node(Node<T>* node);
 
-    Node<T>* insert_bst(Node<T>*& p, Node<T>*& node, T value);
+    Node<T>* insert_node(T value, Node<T>*& node);
 
 private:
     Node<T>* m_pRoot;
@@ -116,33 +116,35 @@ void RBTree<T>::print_node(Node<T>* node)
 }
 
 template <typename T>
-Node<T>* RBTree<T>::insert_bst(Node<T>*& p, Node<T>*& node, T value)
+Node<T>* RBTree<T>::insert_node(T value, Node<T>*& node)
 {
-    if (node == m_pNil)        //When the tree is empty
+    if (node == m_pNil)        
+        node = new Node<T>(value, RED, m_pNil, m_pNil);
+    
+    if (value < node->m_Value)
     {
-        node = new Node<T>(value, RED, m_pNil, m_pNil, p);
-        if (p == m_pNil)
-            m_pRoot = node;
-        if (value > p->m_Value)
-            p->m_pRight = node;
+        if (node->m_pLeft == m_pNil)
+            node->m_pLeft = new Node<T>(value, RED, m_pNil, m_pNil, node);
         else
-            p->m_pRight = node;
+            insert_node(value, node->m_pLeft);
     }
-    else                //tree is not empty
+
+    if(value >= node->m_Value)
     {
-        if (value < node->m_Value)
-            return insert_bst(node, node->m_pLeft, value);
+        if (node->m_pRight == m_pNil)
+            node->m_pRight = new Node<T>(value, RED, m_pNil, m_pNil, node);
         else
-            return insert_bst(node, node->m_pRight, value);
+            insert_node(value, node->m_pRight);
     }
+
     return node;
 }
 
 template <typename T>
 void RBTree<T>::insert(T value)
 {
-    Node<T>* node = insert_bst(m_pNil, m_pRoot, value);
-    // The following is insert_fixup, divided into 3x2 = 6 cases, from a symmetrical perspective, there are only three.
+    Node<T>* node = insert_node(value, m_pRoot);
+   
     while (node->m_pParent->m_Color == RED)
     {
         if (node->m_pParent->m_pParent->m_pLeft == node->m_pParent)
