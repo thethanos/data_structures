@@ -2,200 +2,203 @@
 
 #include <iostream>
 
-enum COLOR
+namespace RB
 {
-    RED = 0,
-    BLACK
-};
-
-template <typename T>
-class RBTree;
-
-template <typename T>
-class Node
-{
-public:
-    Node(T value, COLOR color = RED, Node<T>* left = nullptr, Node<T>* right = nullptr, Node<T>* parent = nullptr);
-
-private:
-    T m_Value;
-
-    Node<T>* m_pLeft;
-    Node<T>* m_pRight;
-    Node<T>* m_pParent;
-
-    COLOR m_Color;
-
-    friend RBTree<T>;
-
-private:
-    Node<T>* get_grandparent() { return m_pParent->m_pParent; };
-};
-
-template <typename T>
-Node<T>::Node(T value, COLOR color, Node<T>* parent, Node<T>* left, Node<T>* right)
-{
-    m_Value   = value;
-    m_Color   = color;
-    m_pParent = parent;
-    m_pLeft   = left;
-    m_pRight  = right;
-}
-
-template <typename T>
-class RBTree
-{
-public:
-    RBTree() { m_pNil = new Node<T>(-1, BLACK, m_pNil, m_pNil, m_pNil); m_pRoot = m_pNil; }
-
-public:
-    void insert(T value);
-    void print() { print_node(m_pRoot); }
-
-private:
-    void rotate_left(Node<T>* node);
-    void rotate_right(Node<T>* node);
-    void swap_colors(Node<T>* node);
-    void print_node(Node<T>* node);
-
-    Node<T>* insert_node(T value, Node<T>*& node);
-
-private:
-    Node<T>* m_pRoot;
-    Node<T>* m_pNil;    
-};
-
-template <typename T>
-void RBTree<T>::rotate_left(Node<T>* node)
-{
-    Node<T>* newRoot = node->m_pRight;
-    node->m_pRight = newRoot->m_pLeft;
-
-    if (newRoot->m_pLeft != m_pNil)
-        newRoot->m_pLeft->m_pParent = node;
-
-    newRoot->m_pParent = node->m_pParent;
-
-    if (node->m_pParent == m_pNil)
-        m_pRoot = newRoot;
-    else if (node->m_pParent->m_pLeft == node)
-        node->m_pParent->m_pLeft = newRoot;
-    else
-        node->m_pParent->m_pRight = newRoot;
-
-    node->m_pParent = newRoot;
-    newRoot->m_pLeft = node;
-}
-
-template <typename T>
-void RBTree<T>::rotate_right(Node<T>* node)
-{
-    Node<T>* newRoot = node->m_pLeft;
-    node->m_pLeft = newRoot->m_pRight;
-
-    if (newRoot->m_pRight != m_pNil)
-        newRoot->m_pRight->m_pParent = node;
-
-    newRoot->m_pParent = node->m_pParent;
-
-    if (node->m_pParent == m_pNil)
-        m_pRoot = newRoot;
-    else if (node->m_pParent->m_pLeft == node)
-        node->m_pParent->m_pLeft = newRoot;
-    else
-        node->m_pParent->m_pRight = newRoot;
-
-    node->m_pParent = newRoot;
-    newRoot->m_pRight = node;
-}
-
-template <typename T>
-void RBTree<T>::swap_colors(Node<T>* node)
-{
-    node->m_pParent->m_Color = BLACK;
-    node->get_grandparent()->m_Color = RED;
-}
-
-template <typename T>
-void RBTree<T>::print_node(Node<T>* node)
-{
-    if (node == m_pNil) return;
-
-    print_node(node->m_pLeft);
-    std::cout << "Value: " << node->m_Value << " color: " << (node->m_Color ? "black" : "red") << std::endl;
-    print_node(node->m_pRight);
-}
-
-template <typename T>
-Node<T>* RBTree<T>::insert_node(T value, Node<T>*& node)
-{
-    if (node == m_pNil)        
-        node = new Node<T>(value, RED, m_pNil, m_pNil, m_pNil);
-    
-    if (value < node->m_Value)
+    enum COLOR
     {
-        if (node->m_pLeft == m_pNil)
-            return node->m_pLeft = new Node<T>(value, RED, node, m_pNil, m_pNil);
-        else
-            return insert_node(value, node->m_pLeft);
+        RED = 0,
+        BLACK
+    };
+
+    template <typename T>
+    class RBTree;
+
+    template <typename T>
+    class Node
+    {
+    public:
+        Node(T value, COLOR color = RED, Node<T>* left = nullptr, Node<T>* right = nullptr, Node<T>* parent = nullptr);
+
+    private:
+        T m_Value;
+
+        Node<T>* m_pLeft;
+        Node<T>* m_pRight;
+        Node<T>* m_pParent;
+
+        COLOR m_Color;
+
+        friend RBTree<T>;
+
+    private:
+        Node<T>* get_grandparent() { return m_pParent->m_pParent; };
+    };
+
+    template <typename T>
+    Node<T>::Node(T value, COLOR color, Node<T>* parent, Node<T>* left, Node<T>* right)
+    {
+        m_Value = value;
+        m_Color = color;
+        m_pParent = parent;
+        m_pLeft = left;
+        m_pRight = right;
     }
 
-    if(value > node->m_Value)
+    template <typename T>
+    class RBTree
     {
-        if (node->m_pRight == m_pNil)
-            return node->m_pRight = new Node<T>(value, RED, node, m_pNil, m_pNil);
+    public:
+        RBTree() { m_pNil = new Node<T>(-1, BLACK, m_pNil, m_pNil, m_pNil); m_pRoot = m_pNil; }
+
+    public:
+        void insert(T value);
+        void print() { print_node(m_pRoot); }
+
+    private:
+        void rotate_left(Node<T>* node);
+        void rotate_right(Node<T>* node);
+        void swap_colors(Node<T>* node);
+        void print_node(Node<T>* node);
+
+        Node<T>* insert_node(T value, Node<T>*& node);
+
+    private:
+        Node<T>* m_pRoot;
+        Node<T>* m_pNil;
+    };
+
+    template <typename T>
+    void RBTree<T>::rotate_left(Node<T>* node)
+    {
+        Node<T>* newRoot = node->m_pRight;
+        node->m_pRight = newRoot->m_pLeft;
+
+        if (newRoot->m_pLeft != m_pNil)
+            newRoot->m_pLeft->m_pParent = node;
+
+        newRoot->m_pParent = node->m_pParent;
+
+        if (node->m_pParent == m_pNil)
+            m_pRoot = newRoot;
+        else if (node->m_pParent->m_pLeft == node)
+            node->m_pParent->m_pLeft = newRoot;
         else
-            return insert_node(value, node->m_pRight);
+            node->m_pParent->m_pRight = newRoot;
+
+        node->m_pParent = newRoot;
+        newRoot->m_pLeft = node;
     }
 
-    return node;
-}
-
-template <typename T>
-void RBTree<T>::insert(T value)
-{
-    Node<T>* node = insert_node(value, m_pRoot);
-   
-    while (node->m_pParent->m_Color == RED)
+    template <typename T>
+    void RBTree<T>::rotate_right(Node<T>* node)
     {
-        if (node->get_grandparent()->m_pLeft == node->m_pParent)
+        Node<T>* newRoot = node->m_pLeft;
+        node->m_pLeft = newRoot->m_pRight;
+
+        if (newRoot->m_pRight != m_pNil)
+            newRoot->m_pRight->m_pParent = node;
+
+        newRoot->m_pParent = node->m_pParent;
+
+        if (node->m_pParent == m_pNil)
+            m_pRoot = newRoot;
+        else if (node->m_pParent->m_pLeft == node)
+            node->m_pParent->m_pLeft = newRoot;
+        else
+            node->m_pParent->m_pRight = newRoot;
+
+        node->m_pParent = newRoot;
+        newRoot->m_pRight = node;
+    }
+
+    template <typename T>
+    void RBTree<T>::swap_colors(Node<T>* node)
+    {
+        node->m_pParent->m_Color = BLACK;
+        node->get_grandparent()->m_Color = RED;
+    }
+
+    template <typename T>
+    void RBTree<T>::print_node(Node<T>* node)
+    {
+        if (node == m_pNil) return;
+
+        print_node(node->m_pLeft);
+        std::cout << "Value: " << node->m_Value << " color: " << (node->m_Color ? "black" : "red") << std::endl;
+        print_node(node->m_pRight);
+    }
+
+    template <typename T>
+    Node<T>* RBTree<T>::insert_node(T value, Node<T>*& node)
+    {
+        if (node == m_pNil)
+            node = new Node<T>(value, RED, m_pNil, m_pNil, m_pNil);
+
+        if (value < node->m_Value)
         {
-            if (node->get_grandparent()->m_pRight->m_Color == RED)
-            {
-                swap_colors(node);
-                node->get_grandparent()->m_pRight->m_Color = BLACK;
-                node = node->get_grandparent();
-            }
+            if (node->m_pLeft == m_pNil)
+                return node->m_pLeft = new Node<T>(value, RED, node, m_pNil, m_pNil);
             else
-            {
-                if (node->m_pParent->m_pRight == node)                        
-                {
-                    node = node->m_pParent;
-                    rotate_left(node);
-                }                                           
-                swap_colors(node);
-                rotate_right(node->get_grandparent());
-            }
+                return insert_node(value, node->m_pLeft);
         }
-        else
+
+        if (value > node->m_Value)
         {
-            if (node->get_grandparent()->m_pLeft->m_Color == RED)
-            {
-                swap_colors(node);
-                node->get_grandparent()->m_pLeft->m_Color = BLACK;
-                node = node->get_grandparent();
-            }
+            if (node->m_pRight == m_pNil)
+                return node->m_pRight = new Node<T>(value, RED, node, m_pNil, m_pNil);
             else
+                return insert_node(value, node->m_pRight);
+        }
+
+        return node;
+    }
+
+    template <typename T>
+    void RBTree<T>::insert(T value)
+    {
+        Node<T>* node = insert_node(value, m_pRoot);
+
+        while (node->m_pParent->m_Color == RED)
+        {
+            if (node->get_grandparent()->m_pLeft == node->m_pParent)
             {
-                if (node->m_pParent->m_pLeft == node)                        
+                if (node->get_grandparent()->m_pRight->m_Color == RED)
                 {
-                    node = node->m_pParent;
-                    rotate_right(node);
+                    swap_colors(node);
+                    node->get_grandparent()->m_pRight->m_Color = BLACK;
+                    node = node->get_grandparent();
                 }
-                swap_colors(node);
-                rotate_left(node->get_grandparent());
+                else
+                {
+                    if (node->m_pParent->m_pRight == node)
+                    {
+                        node = node->m_pParent;
+                        rotate_left(node);
+                    }
+                    swap_colors(node);
+                    rotate_right(node->get_grandparent());
+                }
+            }
+            else
+            {
+                if (node->get_grandparent()->m_pLeft->m_Color == RED)
+                {
+                    swap_colors(node);
+                    node->get_grandparent()->m_pLeft->m_Color = BLACK;
+                    node = node->get_grandparent();
+                }
+                else
+                {
+                    if (node->m_pParent->m_pLeft == node)
+                    {
+                        node = node->m_pParent;
+                        rotate_right(node);
+                    }
+                    swap_colors(node);
+                    rotate_left(node->get_grandparent());
+                }
             }
         }
+        m_pRoot->m_Color = BLACK;
     }
-    m_pRoot->m_Color = BLACK;
 }
