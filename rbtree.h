@@ -27,6 +27,9 @@ private:
     COLOR m_Color;
 
     friend RBTree<T>;
+
+private:
+    Node<T>* get_grandparent() { return m_pParent->m_pParent; };
 };
 
 template <typename T>
@@ -50,15 +53,16 @@ public:
     void print() { print_node(m_pRoot); }
 
 private:
-    void rotate_left(Node<T>* x);
-    void rotate_right(Node<T>* x);
+    void rotate_left(Node<T>* node);
+    void rotate_right(Node<T>* node);
+    void swap_colors(Node<T>* node);
     void print_node(Node<T>* node);
 
     Node<T>* insert_node(T value, Node<T>*& node);
 
 private:
     Node<T>* m_pRoot;
-    Node<T>* m_pNil;     //external node, color: black
+    Node<T>* m_pNil;    
 };
 
 template <typename T>
@@ -106,6 +110,13 @@ void RBTree<T>::rotate_right(Node<T>* node)
 }
 
 template <typename T>
+void RBTree<T>::swap_colors(Node<T>* node)
+{
+    node->m_pParent->m_Color = BLACK;
+    node->get_grandparent()->m_Color = RED;
+}
+
+template <typename T>
 void RBTree<T>::print_node(Node<T>* node)
 {
     if (node == m_pNil) return;
@@ -147,46 +158,42 @@ void RBTree<T>::insert(T value)
    
     while (node->m_pParent->m_Color == RED)
     {
-        if (node->m_pParent->m_pParent->m_pLeft == node->m_pParent)
+        if (node->get_grandparent()->m_pLeft == node->m_pParent)
         {
-            if (node->m_pParent->m_pParent->m_pRight->m_Color == RED)                //A: CASE 1
+            if (node->get_grandparent()->m_pRight->m_Color == RED)
             {
-                node->m_pParent->m_Color = BLACK;
-                node->m_pParent->m_pParent->m_Color = RED;
-                node->m_pParent->m_pParent->m_pRight->m_Color = BLACK;
-                node = node->m_pParent->m_pParent;
+                swap_colors(node);
+                node->get_grandparent()->m_pRight->m_Color = BLACK;
+                node = node->get_grandparent();
             }
             else
             {
-                if (node->m_pParent->m_pRight == node)                        //A: CASE 2
+                if (node->m_pParent->m_pRight == node)                        
                 {
                     node = node->m_pParent;
                     rotate_left(node);
-                }                                           //A: CASE 3
-                node->m_pParent->m_Color = BLACK;
-                node->m_pParent->m_pParent->m_Color = RED;
-                rotate_right(node->m_pParent->m_pParent);
+                }                                           
+                swap_colors(node);
+                rotate_right(node->get_grandparent());
             }
         }
         else
         {
-            if (node->m_pParent->m_pParent->m_pLeft->m_Color == RED)                 //B: CASE 1
+            if (node->get_grandparent()->m_pLeft->m_Color == RED)
             {
-                node->m_pParent->m_Color = BLACK;
-                node->m_pParent->m_pParent->m_Color = RED;
-                node->m_pParent->m_pParent->m_pLeft->m_Color = BLACK;
-                node = node->m_pParent->m_pParent;
+                swap_colors(node);
+                node->get_grandparent()->m_pLeft->m_Color = BLACK;
+                node = node->get_grandparent();
             }
             else
             {
-                if (node->m_pParent->m_pLeft == node)                         //B: CASE 2
+                if (node->m_pParent->m_pLeft == node)                        
                 {
                     node = node->m_pParent;
                     rotate_right(node);
                 }
-                node->m_pParent->m_Color = BLACK;                        //B: CASE 3
-                node->m_pParent->m_pParent->m_Color = RED;
-                rotate_left(node->m_pParent->m_pParent);
+                swap_colors(node);
+                rotate_left(node->get_grandparent());
 
             }
         }
