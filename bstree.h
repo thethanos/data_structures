@@ -132,7 +132,7 @@ namespace BS
 	{
 		if (node->m_pLeft == nullptr)
 		{
-			parent->m_pLeft = nullptr;
+			parent->m_pLeft = node->m_pRight;
 			return node;
 		}
 
