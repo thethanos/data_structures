@@ -52,6 +52,7 @@ namespace RB
 
     public:
         void insert(T value);
+        void remove(T value) { remove_node(find_node(value, m_pRoot)); }
         void print() { print_node(m_pRoot); }
 
     private:
@@ -59,8 +60,13 @@ namespace RB
         void rotate_right(Node<T>* node);
         void swap_colors(Node<T>* node);
         void print_node(Node<T>* node);
+        void rb_transplant(Node<T>*& first, Node<T>*& second);
+        void remove_node(Node<T>* node);
+        void balance_after_remove(Node<T>* node);
 
         Node<T>* insert_node(T value, Node<T>*& node);
+        Node<T>* find_min(Node<T>* node);
+        Node<T>* find_node(T value, Node<T>* node);
 
     private:
         Node<T>* m_pRoot;
@@ -200,5 +206,154 @@ namespace RB
             }
         }
         m_pRoot->m_Color = BLACK;
+    }
+
+    template <typename T>
+    Node<T>* RBTree<T>::find_min(Node<T>* node)
+    {
+        Node<T>* p = node;
+        while (node != m_pNil)
+        {
+            p = node;
+            node = node->m_pLeft;
+        }
+        return p;
+    }
+
+    template <typename T>
+    void RBTree<T>::rb_transplant(Node<T>*& first, Node<T>*& second)
+    {
+        if (first->m_pParent == m_pNil)
+            m_pRoot = second;
+        else if (first == first->m_pParent->m_pLeft)
+            first->m_pParent->m_pLeft = second;
+        else
+            first->m_pParent->m_pRight = second;
+        second->m_pParent = first->m_pParent;
+    }
+
+    template <typename T>
+    void RBTree<T>::remove_node(Node<T>* node)
+    {
+        Node<T>* y = node;
+        bool delcol = y->m_Color;
+        Node<T>* x = node;
+        if (node->m_pLeft == m_pNil)
+        {
+            x = node->m_pRight;
+            rb_transplant(node, node->m_pRight);
+        }
+        else if (node->m_pRight == m_pNil)
+        {
+            x = node->m_pLeft;
+            rb_transplant(node, node->m_pLeft);
+        }
+        else
+        {
+            y = find_min(node->m_pRight);
+            delcol = y->m_Color;
+            x = y->m_pRight;
+            if (y->m_pParent == node)
+            {
+                x->m_pParent = y;
+            }
+            else
+            {
+                rb_transplant(y, y->m_pRight);
+                y->m_pRight = node->m_pRight;
+                y->m_pRight->m_pParent = y;
+            }
+            rb_transplant(node, y);
+            y->m_pLeft = node->m_pLeft;
+            y->m_pLeft->m_pParent = y;
+            y->m_Color = node->m_Color;
+        }
+        if (delcol == BLACK)
+            balance_after_remove(x);
+    }
+
+    template <typename T>
+    void RBTree<T>::balance_after_remove(Node<T>* x)
+    {
+        while (x != m_pRoot && x->m_Color == BLACK)
+        {
+            if (x == x->m_pParent->m_pLeft)
+            {
+                Node<T>* w = x->m_pParent->m_pRight;
+                if (w->m_Color == RED)                                       //A: CASE 1
+                {
+                    w->m_Color = BLACK;
+                    x->m_pParent->m_Color = RED;
+                    rotate_left(x->m_pParent);
+                    w = x->m_pParent->m_pRight;
+                }
+                if (w->m_pLeft->m_Color == BLACK and w->m_pRight->m_Color == BLACK)    //A: CASE 2
+                {
+                    w->m_Color = RED;
+                    x = x->m_pParent;
+                }
+                else
+                {
+                    if (w->m_pRight->m_Color == BLACK)                           //A: CASE 3
+                    {
+                        w->m_pLeft->m_Color = BLACK;
+                        w->m_Color = RED;
+                        rotate_right(w);
+                        w = x->m_pParent->m_pRight;
+                    }
+                    w->m_Color = x->m_pParent->m_Color;                                 //A: CASE 4
+                    x->m_pParent->m_Color = BLACK;
+                    w->m_pRight->m_Color = BLACK;
+                    rotate_left(x->m_pParent);
+                    x = m_pRoot;
+                }
+            }
+            else
+            {
+                Node<T>* w = x->m_pParent->m_pLeft;
+                if (w->m_Color == RED)                                         //B: CASE 1
+                {
+                    w->m_Color = BLACK;
+                    x->m_pParent->m_Color = RED;
+                    rotate_right(x->m_pParent);
+                    w = x->m_pParent->m_pLeft;
+                }
+                if (w->m_pRight->m_Color == BLACK && w->m_pLeft->m_Color == RED)           //B: CASE 2
+                {
+                    w->m_Color = RED;
+                    x = x->m_pParent;
+                }
+                else
+                {
+                    if (w->m_pLeft->m_Color == BLACK)                             //B: CASE 3
+                    {
+                        w->m_pRight->m_Color = BLACK;
+                        w->m_Color = RED;
+                        rotate_left(w);
+                        w = x->m_pParent->m_pLeft;
+                    }
+                    w->m_Color = x->m_pParent->m_Color;                                 //B: CASE 4
+                    x->m_pParent->m_Color = BLACK;
+                    w->m_pLeft->m_Color = BLACK;
+                    rotate_right(x->m_pParent);
+                    x = m_pRoot;
+                }
+            }
+        }
+        x->m_Color = BLACK;
+    }
+
+    template <typename T>
+    Node<T>* RBTree<T>::find_node(T value, Node<T>* node)
+    {
+        if (value == node->m_Value) return node;
+
+        if (value < node->m_Value)
+            return find_node(value, node->m_pLeft);
+
+        if (value > node->m_Value)
+            return find_node(value, node->m_pRight);
+
+        return node;
     }
 }
