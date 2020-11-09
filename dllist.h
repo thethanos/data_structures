@@ -77,7 +77,8 @@ namespace DLL
 	void DLList<T>::pop_front()
 	{
 		Node<T>* temp = m_pHead->m_pNext;
-		temp->m_pPrev = nullptr;
+		if(temp)
+			temp->m_pPrev = nullptr;
 
 		delete m_pHead;
 		m_pHead = temp;
