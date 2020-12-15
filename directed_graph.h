@@ -3,9 +3,11 @@
 #include <vector>
 #include <set>
 #include <iostream>
+#include <list>
 
 using std::vector;
 using std::set;
+using std::list;
 using std::cout;
 using std::endl;
 using uint = unsigned int;
@@ -24,10 +26,11 @@ public:
 	bool is_edge(uint from, uint to);
 	uint size() { return m_Data.size(); }
 
-	void DFS(uint vertex);
+	void depth_first_search(uint vertex);
+	void breadth_first_search(uint vertex);
 
 private:
-	void DFSRec(uint vertex);
+	void dfs_rec_func(uint vertex);
 
 private:
 	vector<set<uint>> m_Data;
@@ -77,14 +80,40 @@ bool DGraphAL::is_edge(uint from, uint to)
 	return false;
 }
 
-void DGraphAL::DFS(uint vertex)
+void DGraphAL::depth_first_search(uint vertex)
 {
 	m_Visited.resize(size(), 0);
 
-	DFSRec(vertex);
+	dfs_rec_func(vertex);
 }
 
-void DGraphAL::DFSRec(uint vertex)
+void DGraphAL::breadth_first_search(uint vertex)
+{
+	m_Visited.resize(size(), 0);
+	m_Visited[vertex] = 1;
+
+	list<uint> queue;
+	queue.push_back(vertex);
+
+	while (!queue.empty())
+	{
+		vertex = queue.front();
+		queue.pop_front();
+
+		cout << vertex << " ";
+
+		for (auto vrtx : m_Data[vertex])
+		{
+			if (!m_Visited[vrtx])
+			{
+				m_Visited[vrtx] = 1;
+				queue.push_back(vrtx);
+			}
+		}
+	}
+}
+
+void DGraphAL::dfs_rec_func(uint vertex)
 {
 	m_Visited[vertex] = 1;
 
@@ -92,7 +121,7 @@ void DGraphAL::DFSRec(uint vertex)
 
 	for (auto vrtx : m_Data[vertex])
 		if (!m_Visited[vrtx])
-			DFSRec(vrtx);
+			dfs_rec_func(vrtx);
 }
 
 class DGraphAM
@@ -108,10 +137,11 @@ public:
 	bool is_edge(uint from, uint to);
 	uint size() { return m_Data.size(); }
 
-	void DFS(uint vertex);
+	void depth_first_search(uint vertex);
+	void breadth_first_search(uint vertex);
 
 private:
-	void DFSRec(uint vertex);
+	void dfs_rec_func(uint vertex);
 
 private:
 	vector<vector<uint>> m_Data;
@@ -161,14 +191,44 @@ bool DGraphAM::is_edge(uint from, uint to)
 	return false;
 }
 
-void DGraphAM::DFS(uint vertex)
+void DGraphAM::depth_first_search(uint vertex)
 {
 	m_Visited.resize(size(), 0);
 
-	DFSRec(vertex);
+	dfs_rec_func(vertex);
 }
 
-void DGraphAM::DFSRec(uint vertex)
+void DGraphAM::breadth_first_search(uint vertex)
+{
+	m_Visited.resize(size(), 0);
+	m_Visited[vertex] = 1;
+
+	list<uint> queue;
+	queue.push_back(vertex);
+
+	while (!queue.empty())
+	{
+		vertex = queue.front();
+		queue.pop_front();
+
+		cout << vertex << " ";
+
+		for (uint vrtx(0); vrtx < size(); ++vrtx)
+		{
+			if (!m_Data[vertex][vrtx])
+				continue;
+
+			if (!m_Visited[vrtx])
+			{
+				m_Visited[vrtx] = 1;
+				queue.push_back(vrtx);
+			}
+		}
+	}
+
+}
+
+void DGraphAM::dfs_rec_func(uint vertex)
 {
 	m_Visited[vertex] = 1;
 
@@ -180,6 +240,6 @@ void DGraphAM::DFSRec(uint vertex)
 			continue;
 
 		if (!m_Visited[vrtx])
-			DFSRec(vrtx);
+			dfs_rec_func(vrtx);
 	}
 }
