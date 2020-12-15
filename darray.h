@@ -15,6 +15,7 @@ public:
 	bool empty() { return m_Size == 0; }
 	uint size() { return m_Size; }
 	T	 back() { return m_pData[m_Size - 1]; }
+	void resize(uint  size);
 
 public:
 	T& operator[](uint index) { return m_pData[index]; }
@@ -23,9 +24,6 @@ private:
 	T*   m_pData{ nullptr };
 	uint m_Size{ 0 };
 	uint m_Capacity{ 0 };
-
-private:
-	void resize(uint  size);
 };
 
 template <typename T>
