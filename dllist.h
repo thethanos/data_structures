@@ -31,8 +31,10 @@ namespace DLL
 		~DLList() {}
 
 	public:
-		void push_back(T value);
+		void push_front(T value);
 		void pop_front();
+		void push_back(T value);
+		void pop_back();
 		uint size() { return m_Size; }
 		bool empty() { return m_Size == 0; }
 		T back()   { return m_pTail->m_Value; }
@@ -46,42 +48,62 @@ namespace DLL
 	};
 
 	template <typename T>
-	void DLList<T>::push_back(T value)
+	void DLList<T>::push_front(T value)
 	{
 		if (m_pHead == nullptr)
 		{
 			m_pHead = new Node<T>(value);
+			m_pTail = m_pHead;
 			m_Size++;
 			return;
 		}
-		
-		Node<T>* prev = m_pHead, *node = m_pHead->m_pNext;
-		while (true)
-		{
-			if (node == nullptr)
-			{
-				node = new Node<T>(value, prev);
-				prev->m_pNext = node;
-				m_Size++;
-				break;
-			}
 
-			prev = node;
-			node = node->m_pNext;
-		}
-
-		m_pTail = node;
+		Node<T>* temp = m_pHead;
+		m_pHead = new Node<T>(value);
+		m_pHead->m_pNext = temp;
+		temp->m_pPrev = m_pHead;
+		m_Size++;
 	}
 
 	template <typename T>
 	void DLList<T>::pop_front()
 	{
 		Node<T>* temp = m_pHead->m_pNext;
-		if(temp)
+		if (temp)
 			temp->m_pPrev = nullptr;
 
 		delete m_pHead;
 		m_pHead = temp;
+		m_Size--;
+	}
+
+	template <typename T>
+	void DLList<T>::push_back(T value)
+	{
+		if (m_pHead == nullptr)
+		{
+			m_pHead = new Node<T>(value);
+			m_pTail = m_pHead;
+			m_Size++;
+			return;
+		}
+
+		Node<T>* temp = m_pTail;
+		m_pTail->m_pNext = new Node<T>(value);
+		m_pTail = m_pTail->m_pNext;
+		m_pTail->m_pPrev = temp;
+		m_Size++;
+	}
+
+	template <typename T>
+	void DLList<T>::pop_back()
+	{
+		Node<T>* temp = m_pTail->m_pPrev;
+
+		delete m_pTail;
+		m_pTail = temp;
+		if(m_pTail)
+			m_pTail->m_pNext = nullptr;
 		m_Size--;
 	}
 }
