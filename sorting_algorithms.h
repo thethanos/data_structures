@@ -64,6 +64,35 @@ namespace util
 
 		delete[] temp;
 	}
+
+	int partition(int arr[], int low, int high)
+	{
+		int pivot = arr[high];  
+		int i = (low - 1); 
+
+		for (int j(low); j < high; j++)
+		{ 
+			if (arr[j] < pivot)
+			{
+				i++; 
+				swap(arr[i], arr[j]);
+			}
+		}
+
+		swap(arr[i + 1], arr[high]);
+		return (i + 1);
+	}
+
+	void quick_sort(int arr[], int low, int high)
+	{
+		if (low >= high)
+			return;
+
+		int pi = partition(arr, low, high);
+
+		quick_sort(arr, low, pi - 1);
+		quick_sort(arr, pi + 1, high);
+	}
 }
 
 template <typename T, size_t size>
@@ -143,4 +172,10 @@ template <typename T, size_t size>
 void merge_sort(T(&arr)[size])
 {
 	util::merge_sort(arr, 0, size - 1);
+}
+
+template <typename T, size_t size>
+void quick_sort(T(&arr)[size])
+{
+	util::quick_sort(arr, 0, size - 1);
 }
