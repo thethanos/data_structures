@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <algorithm>
 
 namespace util
 {
@@ -37,18 +38,16 @@ namespace util
 		int i(low), j(mid + 1), k(low);
 		int* temp = new int[high + 1];
 
-		while (i <= mid && j <= high)
+		for (;i <= mid && j <= high; k++)
 		{
 			if (arr[i] < arr[j])
 			{
 				temp[k] = arr[i];
-				k++;
 				i++;
 			}
 			else
 			{
 				temp[k] = arr[j];
-				k++;
 				j++;
 			}
 		}
@@ -115,6 +114,19 @@ void bubble_sort(T (&arr)[size])
 	}
 }
 
+template <typename T>
+void bubble_sort(T begin, T end)
+{
+	for (auto iter1(begin); iter1 != end; iter1++)
+	{
+		for (auto iter2(begin); iter2 != end; iter2++)
+		{
+			if (*iter1 < *iter2)
+				util::swap(*iter1, *iter2);
+		}
+	}
+}
+
 template <typename T, size_t size>
 void selection_sort(T(&arr)[size])
 {
@@ -126,6 +138,22 @@ void selection_sort(T(&arr)[size])
 				min = j;
 
 		util::swap(arr[i], arr[min]);
+	}
+}
+
+template <typename T>
+void selection_sort(T begin, T end)
+{
+	T min = begin;
+	for (auto iter1(begin); iter1 != end; iter1++)
+	{
+		for (auto iter2(iter1); iter2 != end; iter2++)
+		{
+			if (*iter2 < *min)
+				min = iter2;
+		}
+
+		util::swap(*iter1, *min);
 	}
 }
 
