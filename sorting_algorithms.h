@@ -114,8 +114,8 @@ void bubble_sort(T (&arr)[size])
 	}
 }
 
-template <typename T>
-void bubble_sort(T begin, T end)
+template <typename Iterator>
+void bubble_sort(Iterator begin, Iterator end)
 {
 	for (auto iter1(begin); iter1 != end; iter1++)
 	{
@@ -141,10 +141,10 @@ void selection_sort(T(&arr)[size])
 	}
 }
 
-template <typename T>
-void selection_sort(T begin, T end)
+template <typename Iterator>
+void selection_sort(Iterator begin, Iterator end)
 {
-	T min = begin;
+	Iterator min = begin;
 	for (auto iter1(begin); iter1 != end; iter1++)
 	{
 		for (auto iter2(iter1); iter2 != end; iter2++)
