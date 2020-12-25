@@ -7,12 +7,12 @@ class DArray
 {
 public:
 	DArray() {}
-	~DArray() {}
+	~DArray() { delete[] m_pData; }
 
 public:
 	void push_back(T value);
-	void pop_back() { m_Size--; }
-	bool empty() { return m_Size == 0; }
+	void pop_back() { --m_Size; }
+	bool empty() { return m_Size <= 0; }
 	uint size()  { return m_Size; }
 	T	 back()  { return m_pData[m_Size - 1]; }
 	void resize(uint  size);
@@ -34,13 +34,11 @@ public:
 template <typename T>
 void DArray<T>::push_back(T value)
 {
-	if (m_pData == nullptr)
-		resize(1);
+	if (m_Capacity > m_Size)
+		m_Size++;
+	else
+		resize(m_Size + 1);
 
-	if (m_Size == m_Capacity)
-		resize(m_Size);
-
-	m_Size++;
 	m_pData[m_Size - 1] = value;
 }
 
