@@ -2,7 +2,7 @@
 
 #include "dllist.h"
 
-template <typename T, typename Container = DLL::DLList<T>>
+template <typename T, typename Container = DLList<T>>
 class Queue
 {
 public:
