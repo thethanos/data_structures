@@ -102,7 +102,7 @@ void bubble_sort(T (&arr)[size])
 	{
 		for (int j(0); j < size - 1; ++j)
 		{
-			if (util::swap(arr[j], arr[j + 1]))
+			if (arr[j] > arr[j + 1])
 			{
 				util::swap(arr[j], arr[j + 1]);
 				early_exit = false;
@@ -206,4 +206,20 @@ template <typename T, size_t size>
 void quick_sort(T(&arr)[size])
 {
 	util::quick_sort(arr, 0, size - 1);
+}
+
+template <typename T, size_t size>
+void insertion_sort(T(&arr)[size])
+{
+	for (int i(1); i < size; ++i)
+		for (int j = i; j > 0 && arr[j - 1] > arr[j]; --j)
+			util::swap(arr[j-1], arr[j]);
+}
+
+template <typename Iterator>
+void insertion_sort(Iterator begin, Iterator end)
+{
+	for (auto iter1(begin); iter1 != end; ++iter1)
+		for (auto iter2(iter1), iter3(iter1); iter2 != begin && *(--iter3) > *iter2; --iter2)
+			util::swap(*iter2, *iter3);
 }
