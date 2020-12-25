@@ -1,7 +1,7 @@
 #pragma once
+#include <iterator>
 
 using uint = unsigned int;
-
 
 template <typename T>
 class DLList;
@@ -32,6 +32,13 @@ namespace DLL
 	class BidirectIterator
 	{
 	public:
+		using iterator_category = std::bidirectional_iterator_tag;
+		using value_type		= T;
+		using difference_type   = std::ptrdiff_t;
+		using pointer			= T*;
+		using reference         = T&;
+
+	public:
 		BidirectIterator(Node<T>* pos = nullptr) :m_CurPos(pos) {}
 
 	public:
@@ -45,6 +52,8 @@ namespace DLL
 
 		bool operator==(BidirectIterator<T> other) { return m_CurPos == other.m_CurPos; }
 		bool operator!=(BidirectIterator<T> other) { return m_CurPos != other.m_CurPos; }
+
+		const pointer _Unwraped() const { return m_CurPos; }
 
 	private:
 		Node<T>* m_CurPos;
