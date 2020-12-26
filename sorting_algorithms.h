@@ -20,6 +20,14 @@ namespace util
 		second = temp;
 	}
 
+	template <class Iterator>
+	size_t distance(Iterator begin, Iterator end)
+	{
+		int distance(0);
+		for (auto iter(begin); iter != end; distance++, iter++) {}
+		return distance;
+	}
+
 	void merge(int*, int, int, int);
 	void merge_sort(int* arr, int low, int high)
 	{
@@ -80,6 +88,24 @@ namespace util
 
 		swap(arr[i + 1], arr[high]);
 		return (i + 1);
+	}
+
+	template <typename Iterator>
+	Iterator partition(Iterator begin, Iterator end)
+	{
+		Iterator pivot(begin), iter1(begin), iter2(begin);
+		
+		for (iter1++; iter1 != end; iter1++)
+		{
+			if (*iter1 < *pivot)
+			{
+				iter2++;
+				util::swap(*iter1, *iter2);
+			}
+		}
+
+		util::swap(*pivot, *iter2);
+		return ++iter2;
 	}
 
 	void quick_sort(int arr[], int low, int high)
@@ -206,6 +232,18 @@ template <typename T, size_t size>
 void quick_sort(T(&arr)[size])
 {
 	util::quick_sort(arr, 0, size - 1);
+}
+
+template <typename Iterator>
+void quick_sort(Iterator begin, Iterator end)
+{
+	if (util::distance(begin,end) <= 1)
+		return;
+
+	Iterator mid = util::partition(begin, end);
+
+	quick_sort(begin, mid);
+	quick_sort(mid, end);
 }
 
 template <typename T, size_t size>
