@@ -7,6 +7,7 @@ class DArray
 {
 public:
 	DArray() {}
+	DArray(size_t size) { resize(size, T()); }
 	~DArray() { delete[] m_pData; }
 
 public:
@@ -16,6 +17,7 @@ public:
 	uint size()  { return m_Size; }
 	T	 back()  { return m_pData[m_Size - 1]; }
 	void resize(uint  size);
+	void resize(uint size, T value);
 
 public:
 	T& operator[](uint index) { return m_pData[index]; }
@@ -55,4 +57,17 @@ void DArray<T>::resize(uint size)
 
 	delete[] m_pData;
 	m_pData = temp;
+}
+
+template <typename T>
+void DArray<T>::resize(uint size, T value)
+{
+	m_Capacity = size * 2;
+	m_Size = size;
+
+	delete[] m_pData;
+
+	m_pData = new T[m_Capacity];
+	for (int counter(0); counter < m_Size; ++counter)
+		m_pData[counter] = value;
 }
