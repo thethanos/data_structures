@@ -118,6 +118,14 @@ namespace util
 		quick_sort(arr, low, pi - 1);
 		quick_sort(arr, pi + 1, high);
 	}
+
+	int get_next_gap(int gap)
+	{
+		gap = (gap * 10) / 13;
+
+		if (gap < 1) return 1;
+		return gap;
+	}
 }
 
 template <typename T, size_t size>
@@ -260,4 +268,26 @@ void insertion_sort(Iterator begin, Iterator end)
 	for (auto iter1(begin); iter1 != end; ++iter1)
 		for (auto iter2(iter1), iter3(iter1); iter2 != begin && *(--iter3) > *iter2; --iter2)
 			util::swap(*iter2, *iter3);
+}
+
+template <typename T, size_t size>
+void comb_sort(T(&arr)[size])
+{
+	int gap(size);
+	bool swapped(true);
+
+	while (gap != 1 || swapped == true)
+	{
+		gap = util::get_next_gap(gap);
+		swapped = false;
+
+		for (int i(0); i < size - gap; ++i)
+		{
+			if (arr[i] > arr[i + gap])
+			{
+				util::swap(arr[i], arr[i + gap]);
+				swapped = true;
+			}
+		}
+	}
 }
