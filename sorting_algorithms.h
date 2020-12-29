@@ -291,3 +291,27 @@ void comb_sort(T(&arr)[size])
 		}
 	}
 }
+
+template <typename Iterator>
+void comb_sort(Iterator begin, Iterator end)
+{
+	int gap = util::distance(begin, end) - 1;
+	bool swapped = true;
+
+	while (gap != 1 || swapped == true)
+	{
+		gap = util::get_next_gap(gap);
+		swapped = false;
+
+		auto iter2(begin);
+		std::advance(iter2, gap);
+		for (auto iter1(begin); iter2 != end; ++iter1, ++iter2)
+		{
+			if (*iter1 > * iter2)
+			{
+				util::swap(*iter1, *iter2);
+				swapped = true;
+			}
+		}
+	}
+}
