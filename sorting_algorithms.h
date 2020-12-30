@@ -1,7 +1,7 @@
 #pragma once
 
 #include <iostream>
-#include <algorithm>
+
 
 namespace util
 {
@@ -125,6 +125,25 @@ namespace util
 
 		if (gap < 1) return 1;
 		return gap;
+	}
+
+	void heapify(int* arr, int size, int index)
+	{
+		int left   = (2 * index) + 1;
+		int right  = (2 * index) + 2;
+		int temp = index;
+
+		if (left < size && arr[left] > arr[index])
+			temp = left;
+
+		if (right < size && arr[right] > arr[temp])
+			temp = right;
+
+		if (temp != index)
+		{
+			swap(arr[index], arr[temp]);
+			heapify(arr, size, temp);
+		}
 	}
 }
 
@@ -313,5 +332,18 @@ void comb_sort(Iterator begin, Iterator end)
 				swapped = true;
 			}
 		}
+	}
+}
+
+template <typename T, size_t size>
+void heap_sort(T(&arr)[size])
+{
+	for (int i = (size / 2) - 1; i >= 0; --i)
+		util::heapify(arr, size, i);
+
+	for (int heap_size(size-1); heap_size > 0; --heap_size)
+	{
+		util::swap(arr[0], arr[heap_size]);
+		util::heapify(arr, heap_size, 0);
 	}
 }
