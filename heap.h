@@ -1,5 +1,6 @@
 #pragma once
 
+#include <algorithm>
 #include "darray.h"
 #include "sorting_algorithms.h"
 
@@ -9,6 +10,9 @@ using util::swap;
 template <typename T, typename Container = DArray<T>, typename Comparator = std::less<T>>
 class Heap
 {
+public:
+    Heap(std::initializer_list<T> list);
+
 public:
     void push(T value);
     void pop();
@@ -25,6 +29,16 @@ private:
     Container  m_Data;
     Comparator m_Compare;
 };
+
+template <typename T, typename Container, typename Comparator>
+Heap<T, Container, Comparator>::Heap(std::initializer_list<T> list)
+{
+    m_Data.resize(list.size());
+    std::copy(list.begin(), list.end(), m_Data.begin());
+
+    for (int i = (m_Data.size() / 2) - 1; i >= 0; --i)
+        heapify(i);
+}
 
 template <typename T, typename Container, typename Comparator>
 void Heap<T, Container, Comparator>::push(T value)
@@ -57,9 +71,9 @@ void Heap<T, Container, Comparator>::heapify(uint index)
 {
     if (m_Data.empty()) return;
 
-    int left = left_child(index);
-    int right = right_child(index);
-    int temp = index;
+    uint left = left_child(index);
+    uint right = right_child(index);
+    uint temp = index;
 
     if (left < m_Data.size() && m_Compare(m_Data[left], m_Data[index]))
         temp = left;
