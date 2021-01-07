@@ -186,6 +186,7 @@ void selection_sort(T(&arr)[size])
 	int min(0);
 	for (int i(0); i < size - 1; ++i)
 	{
+		min = i;
 		for (int j(i+1); j < size; ++j)
 			if (arr[j] < arr[min])
 				min = j;
@@ -200,6 +201,7 @@ void selection_sort(Iterator begin, Iterator end)
 	Iterator min = begin;
 	for (auto iter1(begin); iter1 != end; iter1++)
 	{
+		min = iter1;
 		for (auto iter2(iter1); iter2 != end; iter2++)
 		{
 			if (*iter2 < *min)
