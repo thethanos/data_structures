@@ -1,6 +1,8 @@
 #pragma once
 
 #include <iostream>
+#include <thread>
+#include <vector>
 
 
 namespace util
@@ -72,6 +74,35 @@ namespace util
 		delete[] temp;
 	}
 
+	template <typename ForwardIt>
+	void merge(ForwardIt begin, ForwardIt end, ForwardIt mid)
+	{
+		std::vector<typename ForwardIt::value_type> temp;
+
+		auto iter1 = begin, iter2 = mid;
+		for (; iter1 != mid && iter2 != end; )
+		{
+			if (*iter1 < *iter2)
+			{
+				temp.push_back(*iter1);
+				++iter1;
+			}
+			else
+			{
+				temp.push_back(*iter2);
+				++iter2;
+			}
+		}
+
+		for (; iter1 != mid; ++iter1)
+			temp.push_back(*iter1);
+
+		for (; iter2 != end; ++iter2)
+			temp.push_back(*iter2);
+
+		copy(temp.begin(), temp.end(), begin);
+	}
+
 	int partition(int arr[], int low, int high)
 	{
 		int pivot = arr[high];  
@@ -90,10 +121,10 @@ namespace util
 		return (i + 1);
 	}
 
-	template <typename Iterator>
-	Iterator partition(Iterator begin, Iterator end)
+	template <typename ForwardIt>
+	ForwardIt partition(ForwardIt begin, ForwardIt end)
 	{
-		Iterator pivot(begin), iter1(begin), iter2(begin);
+		ForwardIt pivot(begin), iter1(begin), iter2(begin);
 		
 		for (iter1++; iter1 != end; iter1++)
 		{
@@ -257,22 +288,63 @@ void merge_sort(T(&arr)[size])
 	util::merge_sort(arr, 0, size - 1);
 }
 
+template <typename ForwardIt>
+void merge_sort(ForwardIt begin, ForwardIt end)
+{
+	typename ForwardIt::difference_type dist = distance(begin, end);
+	if (dist < 2) return;
+
+	ForwardIt mid_it = next(begin, dist / 2);
+
+	merge_sort(begin, mid_it);
+	merge_sort(mid_it, end);
+
+	util::merge(begin, end, mid_it);
+}
+
+template <typename ForwardIt>
+void merge_sort_mt(ForwardIt begin, ForwardIt end)
+{
+	typename ForwardIt::difference_type dist = distance(begin, end);
+	if (dist < 2) return;
+
+	ForwardIt mid_it = next(begin, dist / 2);
+
+	std::thread th(merge_sort<ForwardIt>, begin, mid_it);
+	merge_sort(mid_it, end);
+
+	th.join();
+	merge(begin, end, mid_it);
+}
+
 template <typename T, size_t size>
 void quick_sort(T(&arr)[size])
 {
 	util::quick_sort(arr, 0, size - 1);
 }
 
-template <typename Iterator>
-void quick_sort(Iterator begin, Iterator end)
+template <typename ForwardIt>
+void quick_sort(ForwardIt begin, ForwardIt end)
 {
-	if (util::distance(begin,end) <= 1)
+	if (util::distance(begin,end) < 2)
 		return;
 
-	Iterator mid = util::partition(begin, end);
+	ForwardIt mid = util::partition(begin, end);
 
 	quick_sort(begin, mid);
 	quick_sort(mid, end);
+}
+
+template <typename ForwardIt>
+void quick_sort_mt(ForwardIt begin, ForwardIt end)
+{
+	if (distance(begin, end) < 2) return;
+
+	ForwardIt mid = partition(begin, end);
+
+	std::thread th(quick_sort<ForwardIt>, begin, mid);
+	quick_sort(mid, end);
+	th.join();
 }
 
 template <typename T, size_t size>
