@@ -83,10 +83,13 @@ void RBTree<T>::rotate_left(RB::Node<T>* node)
 
     if (node->m_pParent == m_pNil)
         m_pRoot = newRoot;
-    else if (node->m_pParent->m_pLeft == node)
-        node->m_pParent->m_pLeft = newRoot;
     else
-        node->m_pParent->m_pRight = newRoot;
+    {
+        if (node->m_pParent->m_pLeft == node)
+            node->m_pParent->m_pLeft = newRoot;
+        else
+            node->m_pParent->m_pRight = newRoot;
+    }
 
     node->m_pParent = newRoot;
     newRoot->m_pLeft = node;
@@ -105,10 +108,13 @@ void RBTree<T>::rotate_right(RB::Node<T>* node)
 
     if (node->m_pParent == m_pNil)
         m_pRoot = newRoot;
-    else if (node->m_pParent->m_pLeft == node)
-        node->m_pParent->m_pLeft = newRoot;
     else
-        node->m_pParent->m_pRight = newRoot;
+    {
+        if (node->m_pParent->m_pLeft == node)
+            node->m_pParent->m_pLeft = newRoot;
+        else
+            node->m_pParent->m_pRight = newRoot;
+    }
 
     node->m_pParent = newRoot;
     newRoot->m_pRight = node;
