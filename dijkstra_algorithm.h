@@ -19,13 +19,17 @@ public:
     void add_edge(int from, int to, int weight);
     void dijkstra_algorithm(int start);
 
+    vector<int> get_path(int from, int to);
+
 private:
-    int get_proximate_vertex();
+    int  get_closest_vertex();
+    void get_path(vector<int>& path, int to);
 
 private:
     vector<vector<int>> m_Data;
     vector<bool>        m_Visited;
     vector<int>         m_Distances;
+    vector<int>         m_Path;
 };
 
 void UGraphAM::add_edge(int from, int to, int weight)
@@ -36,14 +40,20 @@ void UGraphAM::add_edge(int from, int to, int weight)
 
 void UGraphAM::dijkstra_algorithm(int start)
 {
+    m_Visited.clear();
+    m_Distances.clear();
+    m_Path.clear();
+
     m_Visited.resize(m_Data.size());
     m_Distances.resize(m_Data.size(), INT_MAX);
+    m_Path.resize(m_Data.size(), -1);
+
     m_Distances[start] = 0;
 
     int cur_vert(start);
     for (size_t vertex(0); vertex < m_Data.size(); ++vertex)
     {
-        cur_vert = get_proximate_vertex();
+        cur_vert = get_closest_vertex();
         m_Visited[cur_vert] = true;
 
         for (size_t adj_vert(0); adj_vert < m_Data[vertex].size(); ++adj_vert)
@@ -51,12 +61,26 @@ void UGraphAM::dijkstra_algorithm(int start)
             if (m_Visited[adj_vert] || !m_Data[cur_vert][adj_vert]) continue;
 
             if (m_Distances[cur_vert] + m_Data[cur_vert][adj_vert] < m_Distances[adj_vert])
+            {
+                m_Path[adj_vert] = cur_vert;
                 m_Distances[adj_vert] = m_Distances[cur_vert] + m_Data[cur_vert][adj_vert];
+            }
         }
     }
 }
 
-int UGraphAM::get_proximate_vertex()
+vector<int> UGraphAM::get_path(int from, int to)
+{
+    vector<int> path;
+    dijkstra_algorithm(from);
+
+    path.push_back(from);
+    get_path(path, to);
+
+    return path;
+}
+
+int UGraphAM::get_closest_vertex()
 {
     int min_dist(INT_MAX);
     int min_index(0);
@@ -73,6 +97,16 @@ int UGraphAM::get_proximate_vertex()
     }
 
     return min_index;
+}
+
+void UGraphAM::get_path(vector<int>& path, int to)
+{
+    if (m_Path[to] == -1)
+        return;
+
+    get_path(path, m_Path[to]);
+
+    path.push_back(to);
 }
 
 class UGraphAL
