@@ -198,15 +198,16 @@ void bubble_sort(T (&arr)[size])
 	}
 }
 
-template <typename Iterator>
-void bubble_sort(Iterator begin, Iterator end)
+template <typename ForwardIt>
+void bubble_sort(ForwardIt begin, ForwardIt end)
 {
-	for (auto iter1(begin); iter1 != end; iter1++)
+	for (auto iter1(begin); iter1 != end; ++iter1)
 	{
-		for (auto iter2(begin); iter2 != end; iter2++)
+		ForwardIt iter2(begin), iter3(begin);
+		for (iter3++; iter3 != end; ++iter2, ++iter3)
 		{
-			if (*iter1 < *iter2)
-				util::swap(*iter1, *iter2);
+			if (*iter2 > * iter3)
+				std::iter_swap(iter2, iter3);
 		}
 	}
 }
