@@ -38,7 +38,7 @@ private:
 	size_t m_Size = 0;
 
 private:
-	size_t get_index(const Key& key) { return m_Hash(key) % bucket_count(); }
+	size_t get_index(const Key& key, int count) { return m_Hash(key) % count; }
 	void   rehash();
 };
 
@@ -48,7 +48,7 @@ void HashTable<Key, Value, Hash>::insert(const std::pair<Key, Value>& pair)
 	if (m_Size >= bucket_count())
 		rehash();
 
-	size_t index = get_index(pair.first);
+	size_t index = get_index(pair.first, bucket_count());
 
 	m_Data[index] = new HT::Bucket<Key, Value>(pair.first, pair.second);
 	m_Size++;
@@ -57,7 +57,7 @@ void HashTable<Key, Value, Hash>::insert(const std::pair<Key, Value>& pair)
 template <typename Key, typename Value, typename Hash>
 Value& HashTable<Key, Value, Hash>::operator[](const Key& key)
 {
-	size_t index = get_index(key);
+	size_t index = get_index(key, bucket_count());
 
 	if (m_Data[index] == nullptr)
 	{
@@ -72,15 +72,16 @@ template <typename Key, typename Value, typename Hash>
 void HashTable<Key, Value, Hash>::rehash()
 {
 	size_t old_count = bucket_count();
-	m_Data.resize(old_count * 8, nullptr);
 	
-	Key temp_key;
-	for (size_t i(0); i < old_count; ++i)
+	int new_index = 0;
+	vector<HT::Bucket<Key, Value>*> temp(old_count *8, nullptr);
+	for (int i(0); i < old_count; ++i)
 	{
-		if (m_Data[i] != nullptr)
-		{
-			temp_key = m_Data[i]->m_Key;
-			m_Data[get_index(temp_key)] = m_Data[i];
-		}
+		if (m_Data[i] == nullptr) continue;
+
+		new_index		= get_index(m_Data[i]->m_Key, temp.size());
+		temp[new_index] = m_Data[i];
 	}
+
+	m_Data = std::move(temp);
 }
