@@ -39,13 +39,14 @@ private:
 
 private:
 	size_t get_index(const Key& key) { return m_Hash(key) % bucket_count(); }
+	void   rehash();
 };
 
 template <typename Key, typename Value, typename Hash>
 void HashTable<Key, Value, Hash>::insert(const std::pair<Key, Value>& pair)
 {
 	if (m_Size >= bucket_count())
-		m_Data.resize(bucket_count() * 8, nullptr);
+		rehash();
 
 	size_t index = get_index(pair.first);
 
@@ -65,4 +66,21 @@ Value& HashTable<Key, Value, Hash>::operator[](const Key& key)
 	}
 
 	return m_Data[index]->m_Value;
+}
+
+template <typename Key, typename Value, typename Hash>
+void HashTable<Key, Value, Hash>::rehash()
+{
+	size_t old_count = bucket_count();
+	m_Data.resize(old_count * 8, nullptr);
+	
+	Key temp_key;
+	for (size_t i(0); i < old_count; ++i)
+	{
+		if (m_Data[i] != nullptr)
+		{
+			temp_key = m_Data[i]->m_Key;
+			m_Data[get_index(temp_key)] = m_Data[i];
+		}
+	}
 }
