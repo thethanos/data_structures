@@ -50,6 +50,7 @@ void HashTable<Key, Value, Hash>::insert(const std::pair<Key, Value>& pair)
 	size_t index = get_index(pair.first);
 
 	m_Data[index] = new HT::Bucket<Key, Value>(pair.first, pair.second);
+	m_Size++;
 }
 
 template <typename Key, typename Value, typename Hash>
@@ -58,7 +59,10 @@ Value& HashTable<Key, Value, Hash>::operator[](const Key& key)
 	size_t index = get_index(key);
 
 	if (m_Data[index] == nullptr)
+	{
 		m_Data[index] = new HT::Bucket<Key, Value>(key);
+		m_Size++;
+	}
 
 	return m_Data[index]->m_Value;
 }
