@@ -2,28 +2,26 @@
 
 #include <algorithm>
 #include "darray.h"
-#include "sorting_algorithms.h"
-
-using util::swap;
-
 
 template <typename T, typename Container = DArray<T>, typename Comparator = std::less<T>>
 class Heap
 {
 public:
-    Heap(std::initializer_list<T> list);
+    Heap(const std::initializer_list<T>& list);
 
 public:
-    void push(T value);
+    void push(const T& value);
     void pop();
     T    top() { return m_Data[0]; }
 
-private:
-    uint parent(uint index) { return (index - 1) / 2; }
-    uint left_child(uint index) { return (2 * index) + 1; }
-    uint right_child(uint index) { return (2 * index) + 2; }
+    size_t size() const { return m_Data.size(); }
 
-    void heapify(uint index);
+private:
+    size_t parent(size_t index) { return (index - 1) / 2; }
+    size_t left_child(size_t index) { return (2 * index) + 1; }
+    size_t right_child(size_t index) { return (2 * index) + 2; }
+
+    void heapify(size_t index);
 
 private:
     Container  m_Data;
@@ -31,7 +29,7 @@ private:
 };
 
 template <typename T, typename Container, typename Comparator>
-Heap<T, Container, Comparator>::Heap(std::initializer_list<T> list)
+Heap<T, Container, Comparator>::Heap(const std::initializer_list<T>& list)
 {
     m_Data.resize(list.size());
     std::copy(list.begin(), list.end(), m_Data.begin());
@@ -41,12 +39,12 @@ Heap<T, Container, Comparator>::Heap(std::initializer_list<T> list)
 }
 
 template <typename T, typename Container, typename Comparator>
-void Heap<T, Container, Comparator>::push(T value)
+void Heap<T, Container, Comparator>::push(const T& value)
 {
     m_Data.push_back(value);
 
     int index = m_Data.size() - 1;
-    while (index != 0 && m_Compare(m_Data[index], m_Data[parent(index)]))
+    while (index > 0 && m_Compare(m_Data[index], m_Data[parent(index)]))
     {
         swap(m_Data[parent(index)], m_Data[index]);
         index = parent(index);
@@ -56,29 +54,27 @@ void Heap<T, Container, Comparator>::push(T value)
 template <typename T, typename Container, typename Comparator>
 void Heap<T, Container, Comparator>::pop()
 {
-    if (m_Data.empty()) return;
+    if (!size()) return;
 
-    int last = m_Data.size() - 1;
-
-    m_Data[0] = m_Data[last];
+    std::swap(m_Data[0], m_Data[size()-1]);
     m_Data.pop_back();
 
     heapify(0);
 }
 
 template <typename T, typename Container, typename Comparator>
-void Heap<T, Container, Comparator>::heapify(uint index)
+void Heap<T, Container, Comparator>::heapify(size_t index)
 {
-    if (m_Data.empty()) return;
+    if (size() < 2) return;
 
-    uint left = left_child(index);
-    uint right = right_child(index);
-    uint temp = index;
+    size_t left  = left_child(index);
+    size_t right = right_child(index);
+    size_t temp  = index;
 
-    if (left < m_Data.size() && m_Compare(m_Data[left], m_Data[index]))
+    if (left < size() && m_Compare(m_Data[left], m_Data[index]))
         temp = left;
 
-    if (right < m_Data.size() && m_Compare(m_Data[right], m_Data[temp]))
+    if (right < size() && m_Compare(m_Data[right], m_Data[temp]))
         temp = right;
 
     if (temp != index)
