@@ -6,22 +6,15 @@
 namespace BS
 {
 	template <typename T>
-	class BSTree;
-
-	template <typename T>
-	class Node
+	struct Node
 	{
-	public:
 		Node(T value, Node<T>* parent = nullptr) :m_Value(value), m_pParent(parent) { }
 		~Node() {};
 
-	private:
 		T	     m_Value;
 		Node<T>* m_pParent{ nullptr };
 		Node<T>* m_pLeft{ nullptr };
 		Node<T>* m_pRight{ nullptr };
-
-		friend BSTree<T>;
 	};
 }
 
@@ -33,53 +26,44 @@ public:
 	~BSTree() { delete_node(m_pRoot); }
 
 public:
-	void insert(T value) { insert_node(value, m_pRoot); }
-	void remove(T value) { remove_node(value, m_pRoot); }
-	void print() { print_node(m_pRoot); }
+	void insert(const T& value) { insert_node(value, m_pRoot); }
+	void remove(const T& value) { remove_node(value, m_pRoot); }
+
+	size_t size() const  { return m_Size; }
+	bool   empty() const { return !m_Size; }
+	bool   contains(const T& value) const { return contains(value, m_pRoot); }
+
+	BS::Node<T>* get_root() const { return m_pRoot; }
 
 private:
-	BS::Node<T>* m_pRoot;
+	size_t		 m_Size = 0;
+	BS::Node<T>* m_pRoot = nullptr;
 
 private:
-	void insert_node(T value, BS::Node<T>*& parent = nullptr);
-	void print_node(BS::Node<T>* node);
+	void insert_node(const T& value, BS::Node<T>*& parent = nullptr);
 	void delete_node(BS::Node<T>*& node);
 
-	BS::Node<T>* remove_node(T value, BS::Node<T>*& node);
+	BS::Node<T>* remove_node(const T& value, BS::Node<T>*& node);
 	BS::Node<T>* find_min(BS::Node<T>* node, BS::Node<T>*& parent);
+
+	bool contains(const T& value, BS::Node<T>* node) const;
 };
 
 	template <typename T>
-void BSTree<T>::insert_node(T value, BS::Node<T>*& node)
+void BSTree<T>::insert_node(const T& value, BS::Node<T>*& node)
 {
-	if (node == nullptr)
-		node = new Node<T>(value);
-
+	if (!node)
+	{
+		node = new BS::Node<T>(value);
+		m_Size++;
+		return;
+	}
+	
 	if (value < node->m_Value)
-	{
-		if (node->m_pLeft != nullptr)
-			insert_node(value, node->m_pLeft);
-		else
-			node->m_pLeft = new Node<T>(value, node);
-	}
-
-	if (value > node->m_Value)
-	{
-		if (node->m_pRight != nullptr)
-			insert_node(value, node->m_pRight);
-		else
-			node->m_pRight = new Node<T>(value, node);
-	}
-}
-
-template <typename T>
-void BSTree<T>::print_node(BS::Node<T>* node)
-{
-	if (node == nullptr) return;
-
-	print_node(node->m_pLeft);
-	std::cout << node->m_Value << std::endl;
-	print_node(node->m_pRight);
+		insert_node(value, node->m_pLeft);
+	
+	if(value > node->m_Value)
+		insert_node(value, node->m_pRight);
 }
 
 template <typename T>
@@ -92,11 +76,14 @@ void BSTree<T>::delete_node(BS::Node<T>*& node)
 
 	delete node;
 	node = nullptr;
+	m_Size--;
 }
 
 template <typename T>
-BS::Node<T>* BSTree<T>::remove_node(T value, BS::Node<T>*& node)
+BS::Node<T>* BSTree<T>::remove_node(const T& value, BS::Node<T>*& node)
 {
+	if (!node) return nullptr;
+
 	if (value < node->m_Value)
 		node->m_pLeft = remove_node(value, node->m_pLeft);
 
@@ -109,7 +96,11 @@ BS::Node<T>* BSTree<T>::remove_node(T value, BS::Node<T>*& node)
 		BS::Node<T>* right = node->m_pRight;
 		BS::Node<T>* parent = node->m_pParent;
 
-		if (right == nullptr) return left;
+		if (right == nullptr)
+		{
+			m_Size--;
+			return left;
+		}
 
 		BS::Node<T>* min = find_min(right, node);
 
@@ -120,10 +111,11 @@ BS::Node<T>* BSTree<T>::remove_node(T value, BS::Node<T>*& node)
 		delete node;
 		node = nullptr;
 
+		m_Size--;
 		if (m_pRoot == nullptr)
 			return m_pRoot = min;
-
-		return min;
+		else
+			return min;
 	}
 
 	return node;
@@ -139,4 +131,20 @@ BS::Node<T>* BSTree<T>::find_min(BS::Node<T>* node, BS::Node<T>*& parent)
 	}
 
 	return find_min(node->m_pLeft, node);
+}
+
+template <typename T>
+bool BSTree<T>::contains(const T& value, BS::Node<T>* node) const
+{
+	if (!node) return false;
+
+	if (node->m_Value == value) return true;
+
+	if (value < node->m_Value)
+		return contains(value, node->m_pLeft);
+	
+	if (value > node->m_Value)
+		return contains(value, node->m_pRight);
+
+	return false;
 }
