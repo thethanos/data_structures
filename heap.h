@@ -7,19 +7,22 @@ template <typename T, typename Container = DArray<T>, typename Comparator = std:
 class Heap
 {
 public:
+    Heap() {}
     Heap(const std::initializer_list<T>& list);
+    ~Heap(){}
 
 public:
     void push(const T& value);
     void pop();
     T    top() { return m_Data[0]; }
 
-    size_t size() const { return m_Data.size(); }
+    size_t size() const  { return m_Data.size(); }
+    bool   empty() const { return m_Data.empty(); }
 
 private:
-    size_t parent(size_t index) { return (index - 1) / 2; }
-    size_t left_child(size_t index) { return (2 * index) + 1; }
-    size_t right_child(size_t index) { return (2 * index) + 2; }
+    size_t parent(size_t index) const { return (index - 1) / 2; }
+    size_t left_child(size_t index) const { return (2 * index) + 1; }
+    size_t right_child(size_t index) const { return (2 * index) + 2; }
 
     void heapify(size_t index);
 
@@ -43,10 +46,10 @@ void Heap<T, Container, Comparator>::push(const T& value)
 {
     m_Data.push_back(value);
 
-    int index = m_Data.size() - 1;
+    size_t index = m_Data.size() - 1;
     while (index > 0 && m_Compare(m_Data[index], m_Data[parent(index)]))
     {
-        swap(m_Data[parent(index)], m_Data[index]);
+        std::swap(m_Data[parent(index)], m_Data[index]);
         index = parent(index);
     }
 }
@@ -79,7 +82,7 @@ void Heap<T, Container, Comparator>::heapify(size_t index)
 
     if (temp != index)
     {
-        swap(m_Data[index], m_Data[temp]);
+        std::swap(m_Data[index], m_Data[temp]);
         heapify(temp);
     }
 }
