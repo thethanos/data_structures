@@ -10,7 +10,7 @@ namespace DA
 		static T*	allocate(size_t n); 
 		static void	deallocate(T* ptr, size_t n = 0) noexcept { operator delete(ptr); }
 
-		template <typename T, typename ... Args>
+		template <typename ... Args>
 		static void construct(T* ptr, Args&& ... args)
 		{
 			try { new (ptr) T(std::forward<Args>(args)...); }
