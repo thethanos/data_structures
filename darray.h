@@ -1,5 +1,7 @@
 #pragma once
 
+#include <new>
+#include <algorithm>
 
 namespace DA
 {
@@ -132,7 +134,7 @@ void DArray<T, Allocator>::resize(const size_t new_size)
 	T* temp = m_Allocator.allocate(new_size);
 
 	for (size_t i(0); i < m_Size; ++i)
-		m_Allocator.construct(temp + i, *(m_pData + i));
+		m_Allocator.construct(temp + i, std::move(*(m_pData + i)));
 
 	for (size_t i(m_Size); i < new_size; ++i)
 		m_Allocator.construct(temp + i);
@@ -166,7 +168,7 @@ void DArray<T, Allocator>::reserve(size_t new_capacity)
 	T* temp = m_Allocator.allocate(new_capacity);
 
 	for (int i(0); i < m_Size; ++i)
-		m_Allocator.construct(temp + i, *(m_pData + i));
+		m_Allocator.construct(temp + i, std::move(*(m_pData + i)));
 
 	m_Allocator.deallocate(m_pData, m_Capacity);
 
